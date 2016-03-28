@@ -10,7 +10,44 @@
     </div>
 
     <script src="./node_modules/p5/lib/p5.js"></script>
+    <script src="./node_modules/p5/lib/addons/p5.sound.js"></script>
     <script>
+      /**
+       * 0 - ready to record audio
+       * 1 - recording audio, ready to stop
+       * 2 - ready to play image (sound)
+       */
+      state = 0;
+
+      function setup() {
+        createCanvas(400, 400);
+        background(0, 200, 0);
+        fill(0);
+
+        mic = new p5.AudioIn();
+        mic.start();
+
+        recorder = new p5.SoundRecorder();
+        recorder.setInput(mic);
+
+        soundFile = new p5.SoundFile();
+      }
+
+      function mousePressed() {
+        if (state === 0 && mic.enabled) {
+          recorder.record(soundFile);
+          background(200, 0, 0);
+          state++;
+        } else if (state === 1) {
+          recorder.stop();
+          background(200);
+          state++;
+        } else if (state === 2) {
+          soundFile.play();
+          background(0, 0, 200);
+          state = 0;
+        }
+      }
     </script>
   </body>
 </html>
