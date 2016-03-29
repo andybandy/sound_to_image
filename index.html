@@ -12,17 +12,24 @@
     <script src="./temp_static/p5.js"></script>
     <script src="./temp_static/p5.sound.js"></script>
     <script>
-      /**
-       * 0 - ready to record audio
-       * 1 - recording audio, ready to stop
-       * 2 - ready to play image (sound)
-       */
-      state = 0;
+      function preload() {
+        /**
+         * 0 - ready to record audio
+         * 1 - recording audio, ready to stop
+         * 2 - ready to play image (sound)
+         */
+        state = 0;
+        x = 0;
+
+        img = createImage(400, 400);
+        img.loadPixels();
+      }
 
       function setup() {
         createCanvas(400, 400);
         background(0, 200, 0);
         fill(0);
+        stroke(0);
 
         mic = new p5.AudioIn();
         mic.start();
@@ -31,20 +38,45 @@
         recorder.setInput(mic);
 
         soundFile = new p5.SoundFile();
+
+        fft = new p5.FFT();
+        fft.setInput(mic);
+      }
+
+      function draw() {
+        if (state === 1) {
+          var spectrum = fft.analyze();
+          x++;
+
+          var sl = spectrum.length / img.height;
+          for (var y = 0; y < img.height; y++) {
+            img.set(x, img.height - y, color(255 - spectrum[Math.floor(sl*y)]));
+          }
+          img.updatePixels();
+          image(img, 0, 0);
+        } else if (state === 0 && mic.enabled) {
+        /*
+          x++;
+          image(img, 0, 0);
+          line(x, 0, x, img.height);
+          */
+        } else {
+          x = 0;
+          img = createImage(400, 400);
+        }
       }
 
       function mousePressed() {
         if (state === 0 && mic.enabled) {
+          soundFile.stop();
           recorder.record(soundFile);
           background(200, 0, 0);
           state++;
         } else if (state === 1) {
           recorder.stop();
-          background(200);
           state++;
         } else if (state === 2) {
           soundFile.play();
-          background(0, 0, 200);
           state = 0;
         }
       }
