@@ -1,6 +1,6 @@
 {
   "firebase": "crackling-inferno-2617",
-  "public": ".",
+  "public": "./dist",
   "ignore": [
     "firebase.json",
     "**/.*",
