@@ -1,4 +1,6 @@
 node_modules
-temp_static
+dist
+npm-debug.log
 *.swp
 *.swo
+.DS_Store
